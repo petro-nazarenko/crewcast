@@ -1,0 +1,99 @@
+{
+  "firstName": "Ivan",
+  "lastName": "Kovalenko",
+  "fullName": "Ivan Kovalenko",
+  "dateOfBirth": "1985-03-12",
+  "gender": "Male",
+  "nationality": "Ukrainian",
+  "citizenship": "Ukrainian",
+  "placeOfBirth": "Odesa",
+  "englishLevel": "Upper-Intermediate",
+  "email": "ivan.kovalenko@example.com",
+  "phone": "+380501234567",
+  "residence": "Ukraine",
+  "city": "Odesa",
+  "country": "Ukraine",
+  "airport": "ODS",
+  "availableFrom": "2024-06-01",
+  "salary": "4500",
+  "position": "AB",
+  "preferredRank": "AB",
+  "preferredVessel": "PSV",
+  "vesselType": "OSV",
+  "documents": {
+    "passport": {
+      "number": "FP123456",
+      "issued": "2020-01-15",
+      "validTo": "2030-01-15",
+      "country": "Ukraine"
+    },
+    "seamanBookUA": {
+      "number": "AB654321",
+      "issued": "2019-05-10",
+      "validTo": "2024-05-10",
+      "country": "Ukraine"
+    },
+    "usaVisaC1D": {
+      "number": "V987654",
+      "issued": "2021-08-20",
+      "validTo": "2031-08-20"
+    }
+  },
+  "certificates": [
+    {
+      "name": "Basic Safety Training (STCW)",
+      "number": "BST-001",
+      "issued": "2018-04-01",
+      "issuedBy": "Odesa Maritime Academy",
+      "validTo": null
+    },
+    {
+      "name": "Advanced Fire Fighting",
+      "number": "AFF-002",
+      "issued": "2019-06-15",
+      "issuedBy": "Odesa Maritime Academy",
+      "validTo": "2024-06-15"
+    },
+    {
+      "name": "FOET (OPITO)",
+      "number": "FOET-003",
+      "issued": "2022-02-10",
+      "issuedBy": "OPITO Approved Centre",
+      "validTo": "2026-02-10"
+    }
+  ],
+  "seaService": [
+    {
+      "rank": "AB/B/S",
+      "vessel": "MV Atlantic Provider",
+      "dwt": 5200,
+      "type": "PSV",
+      "area": "North Sea",
+      "from": "2021-03-01",
+      "to": "2021-09-01",
+      "company": "North Sea Shipping Ltd"
+    },
+    {
+      "rank": "AB/Rigger",
+      "vessel": "MV Pacific Rigger",
+      "dwt": null,
+      "type": "AHTS",
+      "area": "West Africa",
+      "from": "2022-01-15",
+      "to": "2022-07-15",
+      "company": "OffshoreCo"
+    }
+  ],
+  "experience": "7 years offshore experience on PSV and AHTS vessels",
+  "skills": ["DP Basic", "HUET", "Rigging"],
+  "notes": "Available for immediate hire",
+  "lastVessel": "MV Pacific Rigger",
+  "lastVesselType": "AHTS",
+  "lastCompany": "OffshoreCo",
+  "lastCrewingAgent": "Example Crew Agency",
+  "lastContractEnd": "2022-07-15",
+  "attachments": {
+    "cvPath": "attachments/cv.pdf",
+    "photoPath": "attachments/photo.jpg"
+  }
+}
