@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx src/cli.ts",
+    "cli": "tsx src/cli.ts",
     "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "dependencies": {
