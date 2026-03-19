@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import { chromium } from 'playwright';
 import 'dotenv/config';
 import { CERT_MAP, VTYPE_MAP, RANK_MAP } from './src/adapters/sailinga/mappings.js';
+import { normalizeDate } from './src/normalizers/dateNormalizer.js';
 
 const DRY_RUN = process.env.DRY_RUN === 'true';
 
