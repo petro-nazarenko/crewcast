@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "tsx src/cli.ts",
     "cli": "tsx src/cli.ts",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
