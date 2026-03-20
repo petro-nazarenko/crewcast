@@ -12,6 +12,27 @@ export class CrewInspectorAdapter implements SiteAdapter {
   }
   buildSubmissionPlan(profile: SeafarerProfile): SubmissionPlan {
     const actions: SubmissionAction[] = [];
+    // ── Login flow ──
+    actions.push({ type: 'jsFill', name: 'email', value: profile.email });
+    actions.push({ type: 'click', locator: 'input[type="submit"], button[type="submit"]' });
+    // Wait for "no records" OR selfservice page
+    actions.push({
+      type: 'waitForFunction',
+      expression: "document.querySelector('button:not([style*=\"display: none\"])') !== null && (document.body.innerText.includes('New application') || document.querySelector('#a-seaman') !== null)",
+      timeout: 30000,
+    });
+    // If "New application" button exists — click it
+    actions.push({ type: 'click', locator: 'button.btn-success, input[value="New application"]' });
+    // Wait for Terms agree page OR selfservice
+    actions.push({
+      type: 'waitForFunction',
+      expression: "document.querySelector('#a-seaman') !== null || document.querySelector('input[value=\"Agree\"]') !== null",
+      timeout: 30000,
+    });
+    // If Terms page — click Agree then Go to Start
+    actions.push({ type: 'click', locator: 'input[value="Agree"], button:has-text("Agree")' });
+    actions.push({ type: 'wait', ms: 500 });
+    actions.push({ type: 'click', locator: 'input[value="Go to Start"], button:has-text("Go to Start")' });
     // ── STEP 1: Personal tab ──
     actions.push({ type: 'click', locator: '#a-seaman' });
     actions.push({ type: 'waitForFunction', expression: "document.querySelector('#available_from') !== null" });
@@ -97,8 +118,8 @@ export class CrewInspectorAdapter implements SiteAdapter {
       siteUrl: this.siteUrl,
       waitForReady: {
         type: 'waitForFunction',
-        expression: CI_CONFIG.waitForReadyExpression,
-        timeout: 60000,
+        expression: "document.querySelector('#a-seaman') !== null",
+        timeout: 120000,
       },
       actions,
       submitAction: { type: 'click', locator: 'input[value="SUBMIT"], button:has-text("SUBMIT")' },
