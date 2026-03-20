@@ -1,0 +1,62 @@
+import { CrewInspectorAdapter } from '../../../../src/adapters/crewinspector/index.js';
+import { SeafarerProfile } from '../../../../src/domain/profile.js';
+const adapter = new CrewInspectorAdapter('orca');
+const profile: SeafarerProfile = {
+  firstName: 'Petro',
+  lastName: 'Nazarenko',
+  dateOfBirth: '1985-10-25',
+  nationality: 'UKRAINE',
+  email: 'petrnzrnk@gmail.com',
+  phone: '+380964462605',
+  residence: 'Moldova',
+  city: 'Chisinau',
+  country: 'Moldova',
+  preferredRank: 'AB',
+  availableFrom: '2026-03-10',
+  documents: {
+    passport: { number: 'PU826131', issued: '2023-06-30', validTo: '2033-06-30', country: 'Ukraine' },
+  },
+  certificates: [
+    { name: 'Able Seafarer Deck', number: '10380/2014/08', issued: '2014-05-29', issuedBy: 'Ukraine', validTo: null },
+    { name: 'Basic Safety Training (STCW)', number: '17872', issued: '2024-03-11', issuedBy: 'Ukraine', validTo: '2029-03-11' },
+  ],
+  seaService: [
+    { rank: 'AB/B/S', vessel: 'BOS BASE', dwt: 3265, type: 'OSV', from: '2026-01-27', to: '2026-03-03', company: 'BRITOIL / Atlas NextWave' },
+  ],
+};
+describe('CrewInspectorAdapter.buildSubmissionPlan', () => {
+  it('returns plan with correct siteId', () => {
+    const plan = adapter.buildSubmissionPlan(profile);
+    expect(plan.siteId).toBe('crewinspector-orca');
+  });
+  it('converts ISO date to dd.mm.yyyy format', () => {
+    const plan = adapter.buildSubmissionPlan(profile);
+    const action = plan.actions.find(a => a.type === 'jsFill' && a.name === 'available_from');
+    expect(action).toBeDefined();
+    if (action?.type === 'jsFill') expect(action.value).toBe('10.03.2026');
+  });
+  it('maps AB rank correctly', () => {
+    const plan = adapter.buildSubmissionPlan(profile);
+    const action = plan.actions.find(a => a.type === 'jsSelect' && a.name === 'rank_id');
+    expect(action).toBeDefined();
+    if (action?.type === 'jsSelect') expect(action.text).toBe('Able Seaman');
+  });
+  it('includes certificate actions for mapped certs', () => {
+    const plan = adapter.buildSubmissionPlan(profile);
+    const certActions = plan.actions.filter(a => a.type === 'jsFill' && a.name === 'licence_number');
+    expect(certActions.length).toBeGreaterThan(0);
+  });
+  it('includes sea service actions', () => {
+    const plan = adapter.buildSubmissionPlan(profile);
+    const vesselAction = plan.actions.find(a => a.type === 'jsFill' && a.name === 'vessel_name');
+    expect(vesselAction).toBeDefined();
+    if (vesselAction?.type === 'jsFill') expect(vesselAction.value).toBe('BOS BASE');
+  });
+  it('splits company at slash for owner/agent', () => {
+    const plan = adapter.buildSubmissionPlan(profile);
+    const ownerAction = plan.actions.find(a => a.type === 'jsFill' && a.name === 'owner_name');
+    if (ownerAction?.type === 'jsFill') expect(ownerAction.value).toBe('BRITOIL');
+    const agentAction = plan.actions.find(a => a.type === 'jsFill' && a.name === 'agent_name');
+    if (agentAction?.type === 'jsFill') expect(agentAction.value).toBe('Atlas NextWave');
+  });
+});
