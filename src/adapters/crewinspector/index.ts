@@ -2,7 +2,8 @@ import { SeafarerProfile } from '../../domain/profile.js';
 import { SubmissionPlan, SubmissionAction } from '../../engine/submissionPlan.js';
 import { SiteAdapter } from '../types.js';
 import { CI_RANK_MAP, CI_VTYPE_MAP, CI_CERT_MAP, CI_COUNTRY_MAP } from './mappings.js';
-import { CREWINSPECTOR_COMPANIES, CI_CONFIG } from './config.js';
+import { CREWINSPECTOR_COMPANIES } from './config.js';
+import { splitCompany } from '../../utils/company.js';
 export class CrewInspectorAdapter implements SiteAdapter {
   readonly siteId: string;
   readonly siteUrl: string;
@@ -40,8 +41,8 @@ export class CrewInspectorAdapter implements SiteAdapter {
     actions.push({ type: 'jsFill', name: 'available_from', value: this.toDisplayDate(profile.availableFrom) });
     actions.push({ type: 'jsSelect', name: 'rank_id', text: CI_RANK_MAP[profile.preferredRank ?? ''] ?? 'Able Seaman' });
     actions.push({ type: 'jsSelect', name: 'country_id', text: profile.nationality });
-    actions.push({ type: 'jsSelect', name: 'citizenship_id', text: 'Citizen' });
-    actions.push({ type: 'jsSelect', name: 'marital_id', text: 'Married' });
+    actions.push({ type: 'jsSelect', name: 'citizenship_id', text: profile.citizenship ?? 'Citizen' });
+    actions.push({ type: 'jsSelect', name: 'marital_id', text: profile.maritalStatus ?? 'Single' });
     actions.push({ type: 'jsFill', name: 'middle_name', value: '' });
     actions.push({ type: 'jsFill', name: 'pp_pob', value: profile.placeOfBirth ?? '' });
     if (profile.gender) {
@@ -108,8 +109,8 @@ export class CrewInspectorAdapter implements SiteAdapter {
       actions.push({ type: 'jsSelect', name: 'rank_id', text: CI_RANK_MAP[sea.rank] ?? 'Able Seaman' });
       actions.push({ type: 'jsFill', name: 'on_date', value: this.toDisplayDate(sea.from) });
       actions.push({ type: 'jsFill', name: 'off_date', value: this.toDisplayDate(sea.to) });
-      actions.push({ type: 'jsFill', name: 'owner_name', value: sea.company.split('/')[0].trim() });
-      actions.push({ type: 'jsFill', name: 'agent_name', value: sea.company.split('/')[1]?.trim() ?? '' });
+      actions.push({ type: 'jsFill', name: 'owner_name', value: splitCompany(sea.company).owner });
+      actions.push({ type: 'jsFill', name: 'agent_name', value: splitCompany(sea.company).agent });
       actions.push({ type: 'click', locator: '#save_button' });
       actions.push({ type: 'wait', ms: 1500 });
     }

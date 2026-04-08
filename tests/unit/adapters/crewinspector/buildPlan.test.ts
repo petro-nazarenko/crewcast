@@ -6,6 +6,8 @@ const profile: SeafarerProfile = {
   lastName: 'Nazarenko',
   dateOfBirth: '1985-10-25',
   nationality: 'UKRAINE',
+  citizenship: 'Citizen',
+  maritalStatus: 'Married',
   email: 'petrnzrnk@gmail.com',
   phone: '+380964462605',
   residence: 'Moldova',
@@ -40,6 +42,32 @@ describe('CrewInspectorAdapter.buildSubmissionPlan', () => {
     const action = plan.actions.find(a => a.type === 'jsSelect' && a.name === 'rank_id');
     expect(action).toBeDefined();
     if (action?.type === 'jsSelect') expect(action.text).toBe('Able Seaman');
+  });
+  it('reads citizenship from profile', () => {
+    const plan = adapter.buildSubmissionPlan(profile);
+    const action = plan.actions.find(a => a.type === 'jsSelect' && a.name === 'citizenship_id');
+    expect(action).toBeDefined();
+    if (action?.type === 'jsSelect') expect(action.text).toBe('Citizen');
+  });
+  it('uses default citizenship when not set in profile', () => {
+    const profileNoCitizenship: SeafarerProfile = { ...profile, citizenship: undefined };
+    const plan = adapter.buildSubmissionPlan(profileNoCitizenship);
+    const action = plan.actions.find(a => a.type === 'jsSelect' && a.name === 'citizenship_id');
+    expect(action).toBeDefined();
+    if (action?.type === 'jsSelect') expect(action.text).toBe('Citizen');
+  });
+  it('reads maritalStatus from profile', () => {
+    const plan = adapter.buildSubmissionPlan(profile);
+    const action = plan.actions.find(a => a.type === 'jsSelect' && a.name === 'marital_id');
+    expect(action).toBeDefined();
+    if (action?.type === 'jsSelect') expect(action.text).toBe('Married');
+  });
+  it('uses default maritalStatus when not set in profile', () => {
+    const profileNoMarital: SeafarerProfile = { ...profile, maritalStatus: undefined };
+    const plan = adapter.buildSubmissionPlan(profileNoMarital);
+    const action = plan.actions.find(a => a.type === 'jsSelect' && a.name === 'marital_id');
+    expect(action).toBeDefined();
+    if (action?.type === 'jsSelect') expect(action.text).toBe('Single');
   });
   it('includes certificate actions for mapped certs', () => {
     const plan = adapter.buildSubmissionPlan(profile);

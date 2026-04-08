@@ -34,6 +34,7 @@ export interface SeafarerProfile {
   gender?: string;
   nationality: string;
   citizenship?: string;
+  maritalStatus?: string;
   placeOfBirth?: string;
   englishLevel?: string;
   email: string;

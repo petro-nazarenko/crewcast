@@ -96,7 +96,7 @@ export class EngineRunner {
     try {
       await page.goto(plan.siteUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await runtime.waitForFunction(plan.waitForReady.expression, plan.waitForReady.timeout);
-      await runtime.wait(800);
+      await runtime.waitForNetworkIdle(5000).catch(() => {});
 
       for (const action of plan.actions) {
         try {
@@ -118,7 +118,7 @@ export class EngineRunner {
         await runtime.jsCheck(plan.declareAction.name, plan.declareAction.checked);
       }
       await runtime.click(plan.submitAction.locator);
-      await runtime.wait(5000);
+      await runtime.waitForNetworkIdle(10000).catch(() => {});
 
       const submittedPath = path.join(screenshotsDir, `${runId}_submitted.png`);
       await runtime.screenshot(submittedPath);
