@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { SeafarerProfile } from './domain/profile.js';
 import { normalizeProfile } from './normalizers/profileNormalizer.js';
+import { validateProfileSchema } from './validators/profileSchema.js';
 import { getAdapter } from './adapters/registry.js';
 import { EngineRunner } from './engine/runner.js';
 import { ResultStorage } from './storage/resultStorage.js';
@@ -57,7 +58,15 @@ async function main(): Promise<void> {
     process.exit(1);
   }
   const attachments = resolveAttachments(path.dirname(profilePath));
-  const profile: SeafarerProfile = normalizeProfile({ ...raw, attachments });
+  const rawWithAttachments = { ...raw, attachments };
+
+  const schemaError = validateProfileSchema(rawWithAttachments);
+  if (schemaError) {
+    logger.error(schemaError);
+    process.exit(1);
+  }
+
+  const profile: SeafarerProfile = normalizeProfile(rawWithAttachments as SeafarerProfile);
 
   let adapter;
   try {
