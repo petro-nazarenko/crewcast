@@ -2,7 +2,7 @@ import { SeafarerProfile } from '../../domain/profile.js';
 import { SubmissionPlan, SubmissionAction } from '../../engine/submissionPlan.js';
 import { SiteAdapter } from '../types.js';
 import { CI_RANK_MAP, CI_VTYPE_MAP, CI_CERT_MAP, CI_COUNTRY_MAP } from './mappings.js';
-import { CREWINSPECTOR_COMPANIES, CI_CONFIG } from './config.js';
+import { CREWINSPECTOR_COMPANIES } from './config.js';
 import { splitCompany } from '../../utils/company.js';
 export class CrewInspectorAdapter implements SiteAdapter {
   readonly siteId: string;
