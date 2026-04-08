@@ -3,6 +3,7 @@ dist
 artifacts/screenshots/*
 artifacts/results/*
 artifacts/logs/*
+!artifacts/screenshots/.gitkeep
 !artifacts/results/.gitkeep
 !artifacts/logs/.gitkeep
 .env

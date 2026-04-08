@@ -48,7 +48,14 @@ async function main(): Promise<void> {
     process.exit(1);
   }
 
-  const raw = JSON.parse(fs.readFileSync(profilePath, 'utf-8'));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let raw: any;
+  try {
+    raw = JSON.parse(fs.readFileSync(profilePath, 'utf-8'));
+  } catch {
+    logger.error(`Failed to parse profile JSON: ${profilePath}`);
+    process.exit(1);
+  }
   const attachments = resolveAttachments(path.dirname(profilePath));
   const profile: SeafarerProfile = normalizeProfile({ ...raw, attachments });
 
