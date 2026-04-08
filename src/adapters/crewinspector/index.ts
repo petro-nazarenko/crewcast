@@ -59,7 +59,11 @@ export class CrewInspectorAdapter implements SiteAdapter {
       actions.push({ type: 'upload', locator: '#seaman_file', path: profile.attachments.cvPath });
     }
     actions.push({ type: 'click', locator: '#save_button' });
-    actions.push({ type: 'wait', ms: 1500 });
+    actions.push({
+      type: 'waitForFunction',
+      expression: "document.querySelector('#save_button') === null && document.querySelector('#edit_button') !== null",
+      timeout: 10000,
+    });
     // ── STEP 2: Contacts tab ──
     actions.push({ type: 'click', locator: '#a-address' });
     actions.push({ type: 'waitForFunction', expression: "document.querySelector('input[value=\"New entry\"]') !== null" });
@@ -72,11 +76,17 @@ export class CrewInspectorAdapter implements SiteAdapter {
       actions.push({ type: 'jsFill', name: 'fax', value: profile.phone });
     }
     actions.push({ type: 'click', locator: '#edit_form #save_button' });
-    actions.push({ type: 'wait', ms: 1500 });
+    actions.push({
+      type: 'waitForFunction',
+      expression: "document.querySelector('#edit_form') === null",
+      timeout: 10000,
+    });
     // ── STEP 3: Certificates tab ──
     actions.push({ type: 'click', locator: '#a-cert' });
-    actions.push({ type: 'waitForFunction', expression: "document.querySelector('#a-cert') !== null" });
-    actions.push({ type: 'wait', ms: 1000 });
+    actions.push({
+      type: 'waitForFunction',
+      expression: "document.querySelector('input.btn-success[value=\"New entry\"]') !== null",
+    });
     const certsToAdd = profile.certificates.filter(c => CI_CERT_MAP[c.name]);
     for (const cert of certsToAdd) {
       actions.push({ type: 'click', locator: 'input.btn-success[value="New entry"]' });
@@ -92,12 +102,18 @@ export class CrewInspectorAdapter implements SiteAdapter {
       }
       actions.push({ type: 'jsFill', name: 'licence_number', value: cert.number ?? '' });
       actions.push({ type: 'click', locator: '#save_button' });
-      actions.push({ type: 'wait', ms: 1500 });
+      actions.push({
+        type: 'waitForFunction',
+        expression: "document.querySelector('#cert_id') === null",
+        timeout: 10000,
+      });
     }
     // ── STEP 4: Sea Service tab ──
     actions.push({ type: 'click', locator: '#a-seaservice' });
-    actions.push({ type: 'waitForFunction', expression: "document.querySelector('#a-seaservice') !== null" });
-    actions.push({ type: 'wait', ms: 1000 });
+    actions.push({
+      type: 'waitForFunction',
+      expression: "document.querySelector('input.btn-success[value=\"New entry\"]') !== null",
+    });
     for (const sea of profile.seaService.slice(0, 10)) {
       actions.push({ type: 'click', locator: 'input.btn-success[value="New entry"]' });
       actions.push({ type: 'waitForFunction', expression: "document.querySelector('#vessel_name') !== null" });
@@ -112,7 +128,11 @@ export class CrewInspectorAdapter implements SiteAdapter {
       actions.push({ type: 'jsFill', name: 'owner_name', value: splitCompany(sea.company).owner });
       actions.push({ type: 'jsFill', name: 'agent_name', value: splitCompany(sea.company).agent });
       actions.push({ type: 'click', locator: '#save_button' });
-      actions.push({ type: 'wait', ms: 1500 });
+      actions.push({
+        type: 'waitForFunction',
+        expression: "document.querySelector('#vessel_name') === null",
+        timeout: 10000,
+      });
     }
     return {
       siteId: this.siteId,

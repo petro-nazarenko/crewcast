@@ -80,6 +80,37 @@ describe('CrewInspectorAdapter.buildSubmissionPlan', () => {
     expect(vesselAction).toBeDefined();
     if (vesselAction?.type === 'jsFill') expect(vesselAction.value).toBe('BOS BASE');
   });
+  it('uses waitForFunction instead of wait(1500) after personal save', () => {
+    const plan = adapter.buildSubmissionPlan(profile);
+    // After #save_button click in personal tab, the next action must be a waitForFunction (not a raw wait)
+    const saveIdx = plan.actions.findIndex(a => a.type === 'click' && a.locator === '#save_button');
+    expect(saveIdx).toBeGreaterThan(-1);
+    const afterSave = plan.actions[saveIdx + 1];
+    expect(afterSave?.type).toBe('waitForFunction');
+  });
+
+  it('uses waitForFunction instead of wait(1000) before cert loop', () => {
+    const plan = adapter.buildSubmissionPlan(profile);
+    const certTabIdx = plan.actions.findIndex(a => a.type === 'click' && a.locator === '#a-cert');
+    expect(certTabIdx).toBeGreaterThan(-1);
+    const afterCertTab = plan.actions[certTabIdx + 1];
+    expect(afterCertTab?.type).toBe('waitForFunction');
+  });
+
+  it('uses waitForFunction instead of wait(1000) before sea service loop', () => {
+    const plan = adapter.buildSubmissionPlan(profile);
+    const seaTabIdx = plan.actions.findIndex(a => a.type === 'click' && a.locator === '#a-seaservice');
+    expect(seaTabIdx).toBeGreaterThan(-1);
+    const afterSeaTab = plan.actions[seaTabIdx + 1];
+    expect(afterSeaTab?.type).toBe('waitForFunction');
+  });
+
+  it('no raw wait(1500) actions in the plan for post-save delays', () => {
+    const plan = adapter.buildSubmissionPlan(profile);
+    const longWaits = plan.actions.filter(a => a.type === 'wait' && a.ms >= 1000);
+    expect(longWaits).toHaveLength(0);
+  });
+
   it('splits company at slash for owner/agent', () => {
     const plan = adapter.buildSubmissionPlan(profile);
     const ownerAction = plan.actions.find(a => a.type === 'jsFill' && a.name === 'owner_name');
