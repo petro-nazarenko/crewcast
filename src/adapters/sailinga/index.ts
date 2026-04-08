@@ -3,6 +3,7 @@ import { SubmissionPlan, SubmissionAction } from '../../engine/submissionPlan.js
 import { SiteAdapter } from '../types.js';
 import { CERT_MAP, VTYPE_MAP, RANK_MAP, ENGLISH_MAP } from './mappings.js';
 import { SAILINGA_CONFIG } from './config.js';
+import { splitCompany } from '../../utils/company.js';
 export class SailingaAdapter implements SiteAdapter {
   readonly siteId = SAILINGA_CONFIG.siteId;
   readonly siteUrl = SAILINGA_CONFIG.siteUrl;
@@ -76,7 +77,7 @@ export class SailingaAdapter implements SiteAdapter {
       actions.push({ type: 'jsSelect', name: `Rank${n}`, text: RANK_MAP[e.rank] ?? 'AB' });
       actions.push({ type: 'jsFill', name: `PeriodFrom${n}`, value: e.from });
       actions.push({ type: 'jsFill', name: `PeriodTo${n}`, value: e.to });
-      actions.push({ type: 'jsFill', name: `Company${n}`, value: e.company.split('/')[0].trim() });
+      actions.push({ type: 'jsFill', name: `Company${n}`, value: splitCompany(e.company).owner });
     }
     // Notes
     actions.push({ type: 'jsFill', name: 'rem3', value: profile.notes ?? '' });
