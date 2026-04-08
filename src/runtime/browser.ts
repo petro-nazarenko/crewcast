@@ -49,6 +49,10 @@ export class BrowserRuntime {
     await this.page.waitForFunction(expression, { timeout, polling: 300 });
   }
 
+  async waitForNetworkIdle(timeout = 5000): Promise<void> {
+    await this.page.waitForLoadState('networkidle', { timeout });
+  }
+
   async wait(ms: number): Promise<void> {
     await this.page.waitForTimeout(ms);
   }
