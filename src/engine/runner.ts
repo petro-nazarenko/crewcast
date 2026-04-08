@@ -10,6 +10,13 @@ import { validateProfile } from '../validators/profileValidator.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+function getActionId(action: SubmissionAction): string {
+  if (action.type === 'jsFill' || action.type === 'jsSelect' || action.type === 'jsCheck') return action.name;
+  if (action.type === 'click' || action.type === 'upload') return action.locator;
+  if (action.type === 'waitForFunction') return action.expression.slice(0, 40);
+  return `${action.ms}ms`;
+}
+
 export class EngineRunner {
   private artifactsDir: string;
 
@@ -103,9 +110,10 @@ export class EngineRunner {
           await this.executeAction(runtime, action);
           actionResults.push({ action, status: 'ok' });
           if (action.type === 'upload') uploadedFiles.push(action.path);
-        } catch (err: any) {
-          actionResults.push({ action, status: 'failed', error: err.message });
-          errors.push(`${action.type}[${(action as any).name ?? (action as any).locator}]: ${err.message}`);
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : String(err);
+          actionResults.push({ action, status: 'failed', error: message });
+          errors.push(`${action.type}[${getActionId(action)}]: ${message}`);
         }
       }
 
@@ -123,8 +131,8 @@ export class EngineRunner {
       const submittedPath = path.join(screenshotsDir, `${runId}_submitted.png`);
       await runtime.screenshot(submittedPath);
       screenshots.push(submittedPath);
-    } catch (err: any) {
-      errors.push(err.message);
+    } catch (err: unknown) {
+      errors.push(err instanceof Error ? err.message : String(err));
       const errorPath = path.join(screenshotsDir, `${runId}_error.png`);
       await runtime.screenshot(errorPath).catch(() => {});
       screenshots.push(errorPath);

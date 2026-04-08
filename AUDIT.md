@@ -1,12 +1,115 @@
 # CrewCast — Git Repository Audit Report
 
-> **Date:** 2026-04-08  
+> **Initial audit date:** 2026-04-08  
+> **Post-implementation audit date:** 2026-04-08  
 > **Auditor:** Copilot Coding Agent  
 > **Role:** Architectural auditor & systems engineer focused on deterministic, scalable, semantically coherent platforms
 
 ---
 
-## 2.1 Executive Summary
+## 1. Roadmap After Improvements
+
+See [ROADMAP.md](./ROADMAP.md) for the complete phased roadmap with priorities, dependencies, complexity estimates, and ROI rankings.
+
+---
+
+## 2. Updated Audit Summary
+
+After the first implementation cycle all **P0** and **P1** issues are resolved. The system is now crash-safe, vulnerability-free, and covered by automated CI. Eight P2 issues have been addressed; two remain open.
+
+### Current Risk Register
+
+| # | Risk | Severity | Status |
+|---|------|----------|--------|
+| 1 | 3 npm vulnerabilities (critical/high/moderate) | **P0** | ✅ Resolved |
+| 2 | `JSON.parse` without try/catch in `cli.ts` | **P0** | ✅ Resolved |
+| 3 | No CI/CD pipeline | **P1** | ✅ Resolved |
+| 4 | `ts-jest` TS151002 warnings (`isolatedModules`) | **P1** | ✅ Resolved |
+| 5 | `profileNormalizer` crashes on non-array fields | **P1** | ✅ Resolved |
+| 6 | No ESLint / code style enforcement | **P2** | ✅ Resolved |
+| 7 | No `.env.example` | **P2** | ✅ Resolved |
+| 8 | `artifacts/screenshots/` missing `.gitkeep` | **P2** | ✅ Resolved |
+| 9 | Marital status & citizenship hardcoded in CrewInspector | **P2** | ✅ Resolved |
+| 10 | Company-split logic duplicated in two adapters | **P2** | ✅ Resolved |
+| 11 | No ADR documents | **P2** | ✅ Resolved |
+| 12 | Hard-coded `wait(ms)` in adapter action plans | **P2** | ⬜ Open |
+| 13 | No architecture diagram (C4 or similar) | **P2** | ⬜ Open |
+
+---
+
+## 3. Resolved Issues
+
+### P0 — Critical (All Resolved)
+
+| ID | Issue | File | Resolution |
+|----|-------|------|-----------|
+| P0-1 | `JSON.parse` without error handling | `src/cli.ts` | Wrapped in `try/catch`; process exits with helpful error message |
+| P0-2 | 3 npm vulnerabilities (handlebars critical, picomatch high, brace-expansion moderate) | `package-lock.json` | Fixed via `npm audit fix`; `npm audit` now reports 0 vulnerabilities |
+
+### P1 — Important (All Resolved)
+
+| ID | Issue | File | Resolution |
+|----|-------|------|-----------|
+| P1-1 | `profileNormalizer` crashes if `certificates`/`seaService` not arrays | `src/normalizers/profileNormalizer.ts` | `Array.isArray` guards added; defaults to `[]` |
+| P1-2 | `ts-jest` TS151002 warnings | `tsconfig.json` | `"isolatedModules": true` added |
+| P1-3 | No CI/CD — regressions undetected | — | `.github/workflows/ci.yml` added; runs `npm test`, `npm run lint`, `npm audit` on every push and PR |
+
+### P2 — Desirable (8 of 10 Resolved)
+
+| ID | Issue | File | Resolution |
+|----|-------|------|-----------|
+| P2-1 | No `.env.example` | — | `.env.example` created with `HEADLESS`, `CV_FILE`, `PHOTO_FILE` |
+| P2-2 | `artifacts/screenshots/` empty dir not tracked | `.gitignore` | `.gitkeep` added; `.gitignore` updated with exception |
+| P2-3 | Marital status & citizenship hardcoded to `'Married'`/`'Citizen'` | `src/adapters/crewinspector/index.ts` | Now reads `profile.maritalStatus ?? 'Single'` and `profile.citizenship ?? 'Citizen'` |
+| P2-4 | Company-split logic duplicated (`company.split('/')[0].trim()`) | Both adapter `index.ts` | Extracted to `src/utils/company.ts` — `splitCompany()` — with unit tests |
+| P2-5 | No ESLint configuration | — | `eslint.config.mjs` added with `@typescript-eslint` recommended rules |
+| P2-6 | No ADR documents | `docs/adr/` | ADR-001 (adapter pattern), ADR-002 (submission plan), ADR-003 (profile normalization) created |
+| P2-7 | `any` type in `engine/runner.ts` catch blocks (4 lint warnings) | `src/engine/runner.ts` | Replaced `catch (err: any)` with `catch (err: unknown)` + `instanceof Error` guard; added typed `getActionId()` helper |
+| P2-8 | `engine/runner.ts` fixed `wait(800)` / `wait(5000)` after page load | `src/engine/runner.ts` | Replaced with `runtime.waitForNetworkIdle()` calls |
+
+---
+
+## 4. Remaining Issues
+
+| ID | Issue | File | Priority | Effort | Notes |
+|----|-------|------|----------|--------|-------|
+| R-1 | Hard-coded `wait(ms)` calls in CrewInspector adapter action plans (`wait(1500)`, `wait(1000)`) | `src/adapters/crewinspector/index.ts` | P2 | Medium | Waits between multi-step form entries; replacement requires `waitForFunction` conditions for each form save confirmation |
+| R-2 | No architecture diagram | `docs/` | P2 | Medium | A C4 Level 1/2 or ASCII diagram would help onboarding; ADRs partially fill this gap |
+
+---
+
+## 5. New Issues
+
+| ID | Issue | File | Priority | Notes |
+|----|-------|------|----------|-------|
+| N-1 | ESLint only covers `src/**` — test files excluded | `eslint.config.mjs`, `package.json` | P2 | ✅ Fixed: ESLint now covers `tests/**/*.ts`; lint script updated to `eslint src tests` |
+| N-2 | CI runs `npm audit --audit-level=high`; moderate vulnerabilities silently skipped | `.github/workflows/ci.yml` | P2 | ✅ Fixed: changed to `--audit-level=moderate` |
+| N-3 | No profile schema validation at parse time — shape mismatches produce cryptic downstream errors | `src/cli.ts` | P1 | A Zod schema or JSON Schema validator on the raw input would give clear field-level errors |
+
+---
+
+## 6. Updated Recommendations
+
+### P0 — No open P0 issues
+
+All critical issues resolved.
+
+### P1 — One new P1 recommendation
+
+| Rec | Action | File | Rationale |
+|-----|--------|------|-----------|
+| R-P1-1 | Add Zod (or JSON Schema) profile validation in `cli.ts` before `normalizeProfile` | `src/cli.ts`, new `src/validators/profileSchema.ts` | Currently, a typo in `profile.json` (e.g. `seaService` as an object) surfaces as an obscure runtime error. Schema validation at parse time produces a user-friendly, field-level error message. |
+
+### P2 — Remaining and new recommendations
+
+| Rec | Action | File | Effort |
+|-----|--------|------|--------|
+| R-P2-1 | Replace `wait(ms)` in CrewInspector adapter with `waitForFunction` conditions | `src/adapters/crewinspector/index.ts` | Medium |
+| R-P2-2 | Add a C4 Level 1 architecture diagram to `docs/` | `docs/architecture.md` | Medium |
+
+---
+
+## 2.1 Original Pre-Implementation Executive Summary
 
 ### Overall Assessment
 

@@ -6,7 +6,7 @@
     "dev": "tsx src/cli.ts",
     "cli": "tsx src/cli.ts",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "lint": "eslint src"
+    "lint": "eslint src tests"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
