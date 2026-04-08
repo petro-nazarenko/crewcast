@@ -6,6 +6,8 @@
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
-    "esModuleInterop": true
-  }
+    "esModuleInterop": true,
+    "isolatedModules": true
+  },
+  "exclude": ["node_modules", "dist", "tests"]
 }

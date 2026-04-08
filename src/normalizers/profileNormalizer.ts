@@ -22,15 +22,15 @@ export function normalizeProfile(p: SeafarerProfile): SeafarerProfile {
         },
       }),
     },
-    certificates: p.certificates.map(c => ({
+    certificates: Array.isArray(p.certificates) ? p.certificates.map(c => ({
       ...c,
       issued: normalizeDate(c.issued),
       validTo: c.validTo ? normalizeDate(c.validTo) : c.validTo,
-    })),
-    seaService: p.seaService.map(s => ({
+    })) : [],
+    seaService: Array.isArray(p.seaService) ? p.seaService.map(s => ({
       ...s,
       from: normalizeDate(s.from),
       to: normalizeDate(s.to),
-    })),
+    })) : [],
   };
 }
